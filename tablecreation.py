@@ -54,7 +54,36 @@ CREATE TABLE manage(
                             INSERT INTO manage (uid,name,email,password,salt,is_admin)
                             VALUES (?,?,?,?,?,?)
                             """,params)
+    #method to create product table 
+    def create_product(self):
+        self.cur_tc.execute("""
+                            CREATE TABLE product(
+                            uid INTEGER
+                            name TEXT
+                            price REAL
+                            desc TEXT
+                            stock INTEGER
+                            )
+                            """)
+    #create table to store customer shopping carts 
+    def create_carts(self):
+        self.cur_tc.execute("""
+                            CREATE TABLE carts(
+                            uid TEXT
+                            cart TEXT
+                            )
+                            """)
 
+    #create table to store orders 
+    def create_orders(self):
+        self.cur.tc.execute("""
+                            CREATE TABLE orders(
+                            orderid = INTEGER
+                            uid = TEXT
+                            product_id
+
+                            )
+                            """)
 
 
         

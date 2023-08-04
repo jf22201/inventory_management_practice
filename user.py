@@ -1,4 +1,4 @@
-import queries,menus
+import queries,menus,product
 import secrets,hashlib,getpass,uuid,time
 from typing import Dict,Tuple
 
@@ -45,29 +45,29 @@ class customer(user):
             menu_resp = input("Please enter your selection here:")
             if menu_resp == "1":
                 update_value = input("Enter your updated name here:")
-                queries.query_obj.overwrite_field(field_name="name",table="customer",field_value=update_value,uid=self.uid)
+                queries.query_obj.overwrite_field_id(field_name="name",table="customer",field_value=update_value,uid=self.uid)
                 self.name = update_value
                 print("Update successful!")
             elif menu_resp == "2":
                 update_value = input("Enter your updated email here:")
-                queries.query_obj.overwrite_field(field_name="email",table="customer",field_value=update_value,uid=self.uid)
+                queries.query_obj.overwrite_field_id(field_name="email",table="customer",field_value=update_value,uid=self.uid)
                 self.email = update_value
                 print("Update successful!")
             elif menu_resp == "3":
                 update_value = input("Enter your updated phone number here:")
-                queries.query_obj.overwrite_field(field_name="phone_num",table="customer",field_value=update_value,uid=self.uid)
+                queries.query_obj.overwrite_field_id(field_name="phone_num",table="customer",field_value=update_value,uid=self.uid)
                 self.phone_num = update_value
                 print("Update successful!")
             elif menu_resp == "4":
                 update_value = input("Enter your updated address here:")
-                queries.query_obj.overwrite_field(field_name="address",table="customer",field_value=update_value,uid=self.uid)
+                queries.query_obj.overwrite_field_id(field_name="address",table="customer",field_value=update_value,uid=self.uid)
                 self.address = update_value
                 print("Update successful!")
             elif menu_resp == "5":
                 update_value = enter_and_check_pw()
                 #generate a new salt for the updated password and hash the new password, pw:index 0, salt:index1.
                 pass_tuple = pass_handle.gen_salt_hash(update_value)
-                queries.query_obj.overwrite_field(field_name=("password","salt"),table="customer",field_value=pass_tuple,uid=self.uid)
+                queries.query_obj.overwrite_field_id(field_name=("password","salt"),table="customer",field_value=pass_tuple,uid=self.uid)
                 print("Update successful!")
                 
 
@@ -98,13 +98,27 @@ class manage(user):
             elif menu_resp == "3":
                 update_value = enter_and_check_pw()
                 pass_tuple = pass_handle.gen_salt_hash(update_value)
-                queries.query_obj.overwrite_field(field_name=("password","salt"),table="manage",field_value=pass_tuple,uid=self.uid)
+                queries.query_obj.overwrite_field_id(field_name=("password","salt"),table="manage",field_value=pass_tuple,uid=self.uid)
                 print("Update successful!")
             elif menu_resp == "4":
                 resp_bool = False
             else:
                 print("Your selection wasn't recognized.")
                 time.sleep(2)
+    def add_new_product(self) -> None:
+        prod_name = input("Type product name here:")
+        prod_price = input("Type price of product (format : 20.00): ")
+        prod_desc = input("Type product description:")
+        prod_stock = input("Input the current stock of the product:")
+        curr_id = queries.query_obj.get_id_counter("product")
+        queries.query_obj.update_id_counter("product")
+        queries.query_obj.new_row("product",(curr_id,prod_name,prod_price,prod_name,prod_stock))
+        product.product_list.list.append(product.Product(name=prod_name,desc=prod_desc,price=prod_price,pid=curr_id,stock=prod_stock))
+        
+        
+
+
+        
 
             
 
@@ -115,6 +129,7 @@ class admin(manage):
     def __init__(self,name:str=None,email:str=None,uid:str=None):
         super().__init__(name,email,uid)
         self.account_type = "admin"
+
 
 
 #takes password as a input and returns tuple containing: salted and hashed password as string, salt value in plaintext
@@ -159,6 +174,7 @@ class login:
         else:
            return manage(uid=info_tuple[0],name=info_tuple[1],email=info_tuple[3])
           
+    #check passwords with email and if matched, return user object.
     def log_user_in(self):
         while True:
             self.email:str = input("Enter your account email here:")
