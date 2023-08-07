@@ -1,4 +1,6 @@
-import user
+from typing import Tuple
+import user,product
+import time
 def main_menu():
     while True:
         
@@ -25,6 +27,7 @@ def main_menu():
 
 
 def logged_in_menu():
+    product.init_product_list()
     if active_user.account_type == "customer":
         print("You are logged in as: {}".format(active_user.name))
         #Keep user in selection menu until valid selection made
@@ -50,6 +53,66 @@ def logged_in_menu():
 
     elif active_user.account_type == "admin":
         print("You are logged in as: {}".format(active_user.name))
+        resp_bool : bool = True
+        while resp_bool == True:
+            print("\n1) Manage products\n2) Manage orders\n3) Change account info\n4) Manage users\n 5) Log out")
+            logged_in_resp:str = input("Please enter your selection here: ")
+            if logged_in_resp == "1":
+                active_user.manage_products()
+                
+
+            elif logged_in_resp == "2":
+                pass
+    
+            elif logged_in_resp == "3":
+                active_user.update_info()
+            elif logged_in_resp =="5":
+                resp_bool == False
+                print("You have been logged out.")
+            else:
+                print("Sorry that was an invalid input, please try again.")
+        
+
         
     else:
         print("You are logged in as {}".format(active_user.name))
+
+class SelectionMenu:
+    #display_tuple is tuple of options to show on menu(str), selections_tuple are the possible inputs for the user to select their desired option
+    def __init__(self,display_tuple:Tuple[str],selections_tuple:Tuple[str]):
+        try:
+            self.display_tuple = display_tuple
+            self.selections_tuple = selections_tuple
+            self.length = len(display_tuple)
+            if self.length != len(selections_tuple):
+                raise Exception 
+        
+        except Exception as e:
+            print("The length of the arguments do not match.")
+    
+    #displays menu and takes user input then returns the input.
+    def show_menu_return_input(self)->str:
+        if self.length == 1:
+            while True:
+                print(self.selections_tuple[0] + ") " + self.display_tuple[0]+"\n")
+                selection = input("Type your input here: ")
+                if selection not in self.selections_tuple:
+                    print("Invalid input, please try again.")
+                    time.sleep(2)
+                else:
+                    return(selection)
+        else:
+            while True:
+                for selection,display in zip(self.selections_tuple,self.display_tuple):
+                    print(selection+") " + display)
+                selection = input("Type your input here")
+                if selection not in self.selections_tuple:
+                     print("Invalid input, please try again.")
+                     time.sleep(2)
+                else:
+                    return(selection)
+                    
+            
+        
+
+        

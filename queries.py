@@ -1,5 +1,5 @@
-import sqlite3
-from typing import Tuple
+import sqlite3,time
+from typing import Tuple,List
 
 class InvalidArugments(Exception):
     def __init__(self,message="Invalid Argument was provided somewhere."):
@@ -75,21 +75,20 @@ class queries:
             
         else:
             #generate the query based on how many columns we are inserting into
-            query_string = """INSERT INTO {},
-            VALUES (?"""
+            query_string = """INSERT INTO {} VALUES (?"""
             for i in range(len(field_values)-2):
                 query_string += ",?"
             query_string += ",?)"
-            self.cur.execute(query_string)
+            self.cur.execute(query_string.format(table),field_values)
         self.con.commit()
     
     #update id_counter by 1 whenever a new product/order is created
     def update_id_counter(self,type:str):
         try:
             if type == "product":
-                self.cur.execute("UPDATE id_counter SET product = product + 1")
+                self.cur.execute("UPDATE id_counter SET productid = productid + 1")
             elif type == "order":
-                self.cur.execute("UPDATE id_counter SET order = order + 1")
+                self.cur.execute("UPDATE id_counter SET orderid = orderid + 1")
             else:
                 raise InvalidArugments()
         except InvalidArugments:
@@ -98,16 +97,26 @@ class queries:
     def get_id_counter(self,type:str) -> int:
         try:
             if type == "product":
-                self.cur.execute("SELECT product FROM id_counter")
-                return self.cur.fetchone()
+                self.cur.execute("SELECT productid FROM id_counter")
+                return self.cur.fetchone()[0]
                 
             elif type == "order":
-                self.cur.execute("SELECT order FROM id_counter")
-                return self.cur.fetchone()
+                self.cur.execute("SELECT orderid FROM id_counter")
+                return self.cur.fetchone()[0]
             else:
                 raise InvalidArugments()
         except InvalidArugments:
             print("Invalid arguments were provided into update_id_counter")
+    def check_id_exists(self,id:int,table:str,col_name:str) -> bool:
+            self.cur.execute("SELECT * FROM {} WHERE {} = ?".format(table,col_name),(id,))
+            if len(self.cur.fetchone()) < 1:
+                return False
+            else:
+                return True
+    def get_all_prod(self) -> List[Tuple]:
+            self.cur.execute("SELECT * FROM product")
+            return self.cur.fetchall()
+
 
             
 

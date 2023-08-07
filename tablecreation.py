@@ -58,10 +58,10 @@ CREATE TABLE manage(
     def create_product(self):
         self.cur_tc.execute("""
                             CREATE TABLE product(
-                            uid INTEGER
-                            name TEXT
-                            price REAL
-                            desc TEXT
+                            productid INTEGER,
+                            name TEXT,
+                            price REAL,
+                            desc TEXT,
                             stock INTEGER
                             )
                             """)
@@ -69,20 +69,35 @@ CREATE TABLE manage(
     def create_carts(self):
         self.cur_tc.execute("""
                             CREATE TABLE carts(
-                            uid TEXT
-                            cart TEXT
+                            uid TEXT,
+                            productid INTEGER,
+                            quantity INTEGER
                             )
                             """)
 
     #create table to store orders 
     def create_orders(self):
-        self.cur.tc.execute("""
+        self.cur_tc.execute("""
                             CREATE TABLE orders(
-                            orderid = INTEGER
-                            uid = TEXT
-                            product_id
+                            orderid INTEGER,
+                            uid TEXT,
+                            productid INTEGER,
+                            quantity INTEGER
 
                             )
+                            """)
+    #table to keep track of id for products and orders
+    def create_id_counter(self):
+        self.cur_tc.execute("""
+                            CREATE TABLE id_counter(
+                            orderid INTEGER,
+                            productid INTEGER
+                            )
+                            """)
+        #initialize both ids at 1, stored value is the next one that can be used (i.e the stored id is yet to be used)
+        self.cur_tc.execute("""
+                            INSERT INTO id_counter
+                            VALUES (1,1)
                             """)
 
 
@@ -93,6 +108,17 @@ CREATE TABLE manage(
         self.conn_tc.commit()
     def close(self)->None:
         self.conn_tc.close()
+
+    def first_time_setup(self):
+        self.create_cust_table()
+        self.create_manage_table()
+        self.create_product()
+        self.create_carts()
+        self.create_orders()
+        self.create_id_counter()
+        self.create_admin()
+        self.commit()
+        self.close()
 
 
 

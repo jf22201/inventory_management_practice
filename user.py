@@ -108,13 +108,33 @@ class manage(user):
     def add_new_product(self) -> None:
         prod_name = input("Type product name here:")
         prod_price = input("Type price of product (format : 20.00): ")
+        prod_price = float(prod_price)
         prod_desc = input("Type product description:")
         prod_stock = input("Input the current stock of the product:")
+        prod_stock = int(prod_stock)
         curr_id = queries.query_obj.get_id_counter("product")
         queries.query_obj.update_id_counter("product")
         queries.query_obj.new_row("product",(curr_id,prod_name,prod_price,prod_name,prod_stock))
-        product.product_list.list.append(product.Product(name=prod_name,desc=prod_desc,price=prod_price,pid=curr_id,stock=prod_stock))
+        product.prod_list.list.append(product.Product(name=prod_name,desc=prod_desc,price=prod_price,pid=curr_id,stock=prod_stock))
+
+    def view_product(self) -> None:
+
+
+
+
+
+
+    def manage_products(self) -> None:
+        menu = menus.SelectionMenu(("Add new product","View/manage Product","Go Back"),("1","2","3"))
+        sel = menu.show_menu_return_input()
+        if sel == "1":
+            self.add_new_product()
+        elif sel == "2":
+            self.view_product()
+
+
         
+
         
 
 
